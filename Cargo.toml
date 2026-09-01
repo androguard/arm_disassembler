@@ -1,0 +1,17 @@
+[package]
+name = "arm_disassembler"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+rust-version = "1.75"
+authors = ["androguard"]
+description = "Zero-allocation iced-style ARM64 decoder and formatter"
+repository = "https://github.com/androguard/arm_disassembler"
+readme = "README.md"
+
+[features]
+default = []
+
+[dependencies]
+
+[dev-dependencies]
