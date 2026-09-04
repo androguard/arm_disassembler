@@ -220,24 +220,56 @@ fn decode_exception(vaddr: u64, raw: u32) -> Instruction {
 }
 
 fn decode_system(vaddr: u64, raw: u32) -> Instruction {
-    // HINT aliases
+    // HINT aliases — PAC/AUT/XPAC live in the HINT encoding space (ARMv8.3+).
+    // Older tooling that only knows NOP/YIELD/… prints these as `hint #N` / nop-class.
     match raw {
         0xD503201F => return Instruction::with_meta(vaddr, raw, Code::Nop, Mnemonic::Nop),
         0xD503203F => return Instruction::with_meta(vaddr, raw, Code::Yield, Mnemonic::Yield),
         0xD503205F => return Instruction::with_meta(vaddr, raw, Code::Wfe, Mnemonic::Wfe),
         0xD503207F => return Instruction::with_meta(vaddr, raw, Code::Wfi, Mnemonic::Wfi),
         0xD503209F => return Instruction::with_meta(vaddr, raw, Code::Sev, Mnemonic::Sev),
-        0xD50320BF => {
+        0xD50320BF => return Instruction::with_meta(vaddr, raw, Code::Sevl, Mnemonic::Sevl),
+        // CRm=0 op2=7
+        0xD50320FF => {
+            return Instruction::with_meta(vaddr, raw, Code::Xpaclri, Mnemonic::Xpaclri)
+        }
+        // CRm=1 — *1716 forms (IA/IB keys, modifier x16)
+        0xD503211F => {
+            return Instruction::with_meta(vaddr, raw, Code::Pacia1716, Mnemonic::Pacia1716)
+        }
+        0xD503215F => {
+            return Instruction::with_meta(vaddr, raw, Code::Pacib1716, Mnemonic::Pacib1716)
+        }
+        0xD503219F => {
             return Instruction::with_meta(vaddr, raw, Code::Autia1716, Mnemonic::Autia1716)
         }
-        0xD50320FF => {
+        0xD50321DF => {
             return Instruction::with_meta(vaddr, raw, Code::Autib1716, Mnemonic::Autib1716)
+        }
+        // CRm=3 — SP / zero-modifier LR signing (common iOS / Android arm64e prologues)
+        0xD503231F => {
+            return Instruction::with_meta(vaddr, raw, Code::Paciaz, Mnemonic::Paciaz)
         }
         0xD503233F => {
             return Instruction::with_meta(vaddr, raw, Code::Paciasp, Mnemonic::Paciasp)
         }
+        0xD503235F => {
+            return Instruction::with_meta(vaddr, raw, Code::Pacibz, Mnemonic::Pacibz)
+        }
         0xD503237F => {
             return Instruction::with_meta(vaddr, raw, Code::Pacibsp, Mnemonic::Pacibsp)
+        }
+        0xD503239F => {
+            return Instruction::with_meta(vaddr, raw, Code::Autiaz, Mnemonic::Autiaz)
+        }
+        0xD50323BF => {
+            return Instruction::with_meta(vaddr, raw, Code::Autiasp, Mnemonic::Autiasp)
+        }
+        0xD50323DF => {
+            return Instruction::with_meta(vaddr, raw, Code::Autibz, Mnemonic::Autibz)
+        }
+        0xD50323FF => {
+            return Instruction::with_meta(vaddr, raw, Code::Autibsp, Mnemonic::Autibsp)
         }
         _ => {}
     }

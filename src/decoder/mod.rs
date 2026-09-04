@@ -160,4 +160,31 @@ mod tests {
         let aand = dec(0x4E221C20);
         assert_eq!(aand.mnemonic, Mnemonic::And);
     }
+
+    #[test]
+    fn pac_hint_aliases_not_nop() {
+        // ARMv8.3 PAC lives in HINT space — must not decode as `hint` / mislabeled AUT.
+        let cases = [
+            (0xD50320BF, Mnemonic::Sevl),
+            (0xD50320FF, Mnemonic::Xpaclri),
+            (0xD503211F, Mnemonic::Pacia1716),
+            (0xD503215F, Mnemonic::Pacib1716),
+            (0xD503219F, Mnemonic::Autia1716),
+            (0xD50321DF, Mnemonic::Autib1716),
+            (0xD503231F, Mnemonic::Paciaz),
+            (0xD503233F, Mnemonic::Paciasp),
+            (0xD503235F, Mnemonic::Pacibz),
+            (0xD503237F, Mnemonic::Pacibsp),
+            (0xD503239F, Mnemonic::Autiaz),
+            (0xD50323BF, Mnemonic::Autiasp),
+            (0xD50323DF, Mnemonic::Autibz),
+            (0xD50323FF, Mnemonic::Autibsp),
+        ];
+        for (raw, expect) in cases {
+            let i = dec(raw);
+            assert_eq!(i.mnemonic, expect, "{raw:#010x} -> {}", i.mnemonic.as_str());
+            assert_ne!(i.mnemonic, Mnemonic::Hint);
+            assert_ne!(i.mnemonic, Mnemonic::Nop);
+        }
+    }
 }

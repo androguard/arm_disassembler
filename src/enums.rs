@@ -222,7 +222,8 @@ pub enum Code {
     Svc, Hvc, Smc, Brk, Hlt, Dcps,
     Nop, Yield, Wfe, Wfi, Sev, Sevl,
     Hint, Mrs, Msr, Sys, Sysl,
-    Paciasp, Pacibsp, Autia1716, Autib1716, Retab,
+    Xpaclri, Pacia1716, Pacib1716, Autia1716, Autib1716,
+    Paciaz, Paciasp, Pacibz, Pacibsp, Autiaz, Autiasp, Autibz, Autibsp, Retab,
     // Loads / stores
     Ldr_lit, Ldrsw_lit, Ldr_fp_lit,
     Ldr_uimm, Ldrb_uimm, Ldrh_uimm, Ldrsb_uimm, Ldrsh_uimm, Ldrsw_uimm,
