@@ -113,7 +113,7 @@ impl Formatter {
                     }
                 }
             }
-            OpKind::Immediate | OpKind::SystemRegister => {
+            OpKind::Immediate => {
                 if matches!(ins.mnemonic, Mnemonic::Movz | Mnemonic::Movk | Mnemonic::Movn)
                     && ins.shift_kind != ShiftKind::None
                 {
@@ -127,6 +127,9 @@ impl Formatter {
                 } else {
                     self.write_imm(out, imm);
                 }
+            }
+            OpKind::SystemRegister => {
+                let _ = write!(out, "{}", sysreg_name(imm));
             }
             OpKind::NearBranch => {
                 if let Some(name) = symbols.resolve(imm) {
@@ -194,6 +197,31 @@ impl Formatter {
             let _ = write!(out, "#{imm}");
         }
     }
+}
+
+/// Format an AArch64 system-register encoding (op0:op1:CRn:CRm:op2 packed).
+fn sysreg_name(enc: u64) -> alloc::string::String {
+    // Common regs first — TPIDR_EL0 is the Android/stack-canary hot path.
+    match enc {
+        0xde82 => return alloc::string::String::from("tpidr_el0"),
+        0xde83 => return alloc::string::String::from("tpidrro_el0"),
+        0xda10 => return alloc::string::String::from("fpcr"),
+        0xda11 => return alloc::string::String::from("fpsr"),
+        0xda20 => return alloc::string::String::from("nzcv"),
+        0xc082 => return alloc::string::String::from("midr_el1"),
+        0xc200 => return alloc::string::String::from("sctlr_el1"),
+        0xc208 => return alloc::string::String::from("tcr_el1"),
+        0xc210 => return alloc::string::String::from("ttbr0_el1"),
+        0xc211 => return alloc::string::String::from("ttbr1_el1"),
+        _ => {}
+    }
+    let op0 = (enc >> 14) & 3;
+    let op1 = (enc >> 11) & 7;
+    let crn = (enc >> 7) & 0xf;
+    let crm = (enc >> 3) & 0xf;
+    let op2 = enc & 7;
+    // Capstone / llvm-style fallback: S3_3_C13_C0_2
+    alloc::format!("s{op0}_{op1}_c{crn}_c{crm}_{op2}")
 }
 
 pub trait FmtWrite {
