@@ -1,3 +1,7 @@
+<p align="center">
+  <img src=".github/logo.jpg" alt="ARM Disassembler logo" width="420">
+</p>
+
 # arm_disassembler
 
 Zero-allocation iced-style ARM64 decoder and formatter (`#![no_std]` + `alloc`).
