@@ -1,0 +1,14 @@
+[package]
+name = "arm-disassembler-py"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Python bindings for arm_disassembler (ARM64 decode/format)"
+
+[lib]
+name = "arm_disassembler"
+crate-type = ["cdylib"]
+
+[dependencies]
+arm_disassembler = { path = ".." }
+pyo3 = { version = "0.22", features = ["extension-module"] }

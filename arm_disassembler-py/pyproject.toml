@@ -1,0 +1,14 @@
+[build-system]
+requires = ["maturin>=1.4,<2"]
+build-backend = "maturin"
+
+[project]
+name = "arm-disassembler"
+version = "0.1.0"
+description = "Python bindings for arm_disassembler: ARM64 disassembly"
+requires-python = ">=3.8"
+license = { text = "Apache-2.0" }
+
+[tool.maturin]
+features = ["pyo3/extension-module"]
+module-name = "arm_disassembler"
