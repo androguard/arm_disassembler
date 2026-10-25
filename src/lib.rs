@@ -12,6 +12,7 @@ mod enums;
 mod helpers;
 mod instruction;
 mod mnemonic;
+mod mnemonic_class;
 mod decoder;
 pub mod formatter;
 
@@ -22,3 +23,6 @@ pub use enums::{
 pub use formatter::{Formatter, SymbolResolver};
 pub use instruction::Instruction;
 pub use mnemonic::Mnemonic;
+pub use mnemonic_class::{
+    mnemonic_class, operand_summary, MnemonicClass, OperandSummary, reg_class,
+};
